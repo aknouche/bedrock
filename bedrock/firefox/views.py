@@ -721,6 +721,7 @@ class DownloadThanksView(L10nTemplateView):
     ftl_files_map = {
         'firefox/new/trailhead/thanks.html': ['firefox/new/download'],
         'firefox/new/desktop/thanks.html': ['firefox/new/desktop'],
+        'firefox/new/desktop/thanks-amo-exp.html': ['firefox/new/desktop'],
     }
     activation_files = [
         'firefox/new/download',
@@ -728,7 +729,7 @@ class DownloadThanksView(L10nTemplateView):
     ]
 
     # place expected ?v= values in this list
-    variations = ['a', 'b', 'c']
+    variations = []
 
     def get_context_data(self, **kwargs):
         ctx = super(DownloadThanksView, self).get_context_data(**kwargs)
@@ -743,9 +744,15 @@ class DownloadThanksView(L10nTemplateView):
         return ctx
 
     def get_template_names(self):
+        variant = self.request.GET.get('xv', None)
+        locale = l10n_utils.get_locale(self.request)
 
         if ftl_file_is_active('firefox/new/desktop'):
-            template = 'firefox/new/desktop/thanks.html'
+
+            if locale == 'en-US' and variant == 'rtamo':
+                template = 'firefox/new/desktop/thanks-amo-exp.html'
+            else:
+                template = 'firefox/new/desktop/thanks.html'
         else:
             template = 'firefox/new/trailhead/thanks.html'
 
